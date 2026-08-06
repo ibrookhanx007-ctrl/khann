@@ -68,6 +68,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  /* FAQ accordion */
+  document.querySelectorAll(".faq-item").forEach(function (item) {
+    var question = item.querySelector(".faq-question");
+    if (!question) return;
+    question.addEventListener("click", function () {
+      var wasOpen = item.classList.contains("open");
+      item.closest(".faq-list").querySelectorAll(".faq-item.open").forEach(function (openItem) {
+        openItem.classList.remove("open");
+      });
+      if (!wasOpen) {
+        item.classList.add("open");
+      }
+    });
+  });
+
   /* Quote & contact forms: submit via Web3Forms (https://web3forms.com)
      so submissions are emailed without needing a custom backend. */
   document.querySelectorAll("form[data-web3forms]").forEach(function (form) {
