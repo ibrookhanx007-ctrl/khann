@@ -527,6 +527,21 @@ p {
   display: block;
 }
 
+.form-error {
+  display: none;
+  background: #fdecea;
+  border: 1px solid #f3b8b2;
+  color: #8a2c22;
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.92rem;
+}
+
+.form-error.visible {
+  display: block;
+}
+
 /* ---------- Contact info blocks ---------- */
 .info-row {
   display: flex;

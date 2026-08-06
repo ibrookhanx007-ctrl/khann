@@ -48,8 +48,13 @@
     <section class="section">
       <div class="container">
         <div class="form-card">
-          <div class="form-success" id="quote-success">Thanks — your email client should now open with your enquiry ready to send to ORYA Security Ltd.</div>
-          <form data-mailto="oryasec@yahoo.com" data-subject="Quote Request - ORYA Security Ltd">
+          <div class="form-success" id="quote-success">Thanks — your quote request has been sent to ORYA Security Ltd. We'll be in touch shortly.</div>
+          <div class="form-error" id="quote-error">Sorry, something went wrong sending your request. Please try again or email us directly at oryasec@yahoo.com.</div>
+          <form data-web3forms="true" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="e4a94869-d227-423d-9ff0-d7342af59da2">
+            <input type="hidden" name="subject" value="Quote Request - ORYA Security Ltd">
+            <input type="hidden" name="from_name" value="ORYA Security Ltd Website">
+            <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
             <div class="form-grid">
               <div class="form-field">
                 <label for="full-name">Full Name</label>
@@ -101,7 +106,7 @@
               </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit Quote Request</button>
-            <p class="form-note">Submitting this form will open your email client with your details ready to send to oryasec@yahoo.com.</p>
+            <p class="form-note">We'll respond to your enquiry as soon as possible.</p>
           </form>
         </div>
       </div>

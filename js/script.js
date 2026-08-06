@@ -68,36 +68,51 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  /* Quote & contact forms: build a mailto with the submitted details
-     since this is a static site with no backend to receive submissions. */
-  document.querySelectorAll("form[data-mailto]").forEach(function (form) {
+  /* Quote & contact forms: submit via Web3Forms (https://web3forms.com)
+     so submissions are emailed without needing a custom backend. */
+  document.querySelectorAll("form[data-web3forms]").forEach(function (form) {
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var submitLabel = submitBtn ? submitBtn.textContent : "";
+    var successEl = form.parentElement.querySelector(".form-success");
+    var errorEl = form.parentElement.querySelector(".form-error");
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      var recipient = form.getAttribute("data-mailto");
-      var subject = form.getAttribute("data-subject") || "Website enquiry";
-      var lines = [];
-
-      form.querySelectorAll("input, select, textarea").forEach(function (field) {
-        if (!field.name) return;
-        var labelEl = form.querySelector('label[for="' + field.id + '"]');
-        var label = labelEl ? labelEl.textContent.trim() : field.name;
-        var value = field.value.trim();
-        if (value) {
-          lines.push(label + ": " + value);
-        }
-      });
-
-      var body = encodeURIComponent(lines.join("\n"));
-      var mailtoUrl = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + body;
-
-      var successEl = form.parentElement.querySelector(".form-success");
-      if (successEl) {
-        successEl.classList.add("visible");
+      if (errorEl) errorEl.classList.remove("visible");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
       }
 
-      window.location.href = mailtoUrl;
-      form.reset();
+      var formData = new FormData(form);
+      var payload = Object.fromEntries(formData.entries());
+
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (result) {
+          if (result.success) {
+            form.reset();
+            if (successEl) successEl.classList.add("visible");
+          } else if (errorEl) {
+            errorEl.classList.add("visible");
+          }
+        })
+        .catch(function () {
+          if (errorEl) errorEl.classList.add("visible");
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitLabel;
+          }
+        });
     });
   });
 });

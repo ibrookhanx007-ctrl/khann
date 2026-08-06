@@ -96,8 +96,13 @@
         </div>
 
         <div class="form-card" style="margin:0;">
-          <div class="form-success" id="contact-success">Thanks — your email client should now open with your message ready to send to ORYA Security Ltd.</div>
-          <form data-mailto="oryasec@yahoo.com" data-subject="Website Enquiry - ORYA Security Ltd">
+          <div class="form-success" id="contact-success">Thanks — your message has been sent to ORYA Security Ltd. We'll be in touch shortly.</div>
+          <div class="form-error" id="contact-error">Sorry, something went wrong sending your message. Please try again or email us directly at oryasec@yahoo.com.</div>
+          <form data-web3forms="true" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="e4a94869-d227-423d-9ff0-d7342af59da2">
+            <input type="hidden" name="subject" value="Website Enquiry - ORYA Security Ltd">
+            <input type="hidden" name="from_name" value="ORYA Security Ltd Website">
+            <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
             <div class="form-field">
               <label for="c-name">Full Name</label>
               <input type="text" id="c-name" name="c-name" required>
