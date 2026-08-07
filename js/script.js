@@ -83,6 +83,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  /* Pre-select the service dropdown on the quote form when arriving from
+     a service detail page's "Request a Quote" link, e.g. quote.html?service=Door%20Supervisors */
+  var serviceSelect = document.getElementById("service");
+  if (serviceSelect) {
+    var requestedService = new URLSearchParams(window.location.search).get("service");
+    if (requestedService) {
+      var matchingOption = Array.from(serviceSelect.options).find(function (opt) {
+        return opt.value === requestedService;
+      });
+      if (matchingOption) {
+        serviceSelect.value = requestedService;
+      }
+    }
+  }
+
   /* Quote & contact forms: submit via Web3Forms (https://web3forms.com)
      so submissions are emailed without needing a custom backend. */
   document.querySelectorAll("form[data-web3forms]").forEach(function (form) {
