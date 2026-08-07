@@ -19,6 +19,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  /* Smooth scroll-reveal on scroll (progressive enhancement — elements are
+     fully visible by default; this only adds motion when JS runs). */
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    var revealEls = document.querySelectorAll(
+      ".card, .section-header, .process-step, .stat, .faq-item, .industry-card, .detail-panel, .benefit-item, .spec-item, .info-row"
+    );
+    var revealIndex = new Map();
+
+    revealEls.forEach(function (el) {
+      el.classList.add("reveal");
+      var parent = el.parentElement;
+      var idx = revealIndex.get(parent) || 0;
+      el.style.transitionDelay = Math.min(idx * 60, 300) + "ms";
+      revealIndex.set(parent, idx + 1);
+    });
+
+    var revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    revealEls.forEach(function (el) {
+      revealObserver.observe(el);
+    });
+  }
+
   /* Highlight active nav link */
   var currentPage = window.location.pathname.split("/").pop() || "index.html";
   document.querySelectorAll(".main-nav a[data-page]").forEach(function (link) {

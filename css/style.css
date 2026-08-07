@@ -344,26 +344,47 @@ p {
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
-  background:
-    linear-gradient(120deg, rgba(2, 8, 15, 0.94) 0%, rgba(7, 26, 45, 0.88) 55%, rgba(10, 37, 64, 0.8) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23071a2d'/%3E%3C/svg%3E");
-  background-size: cover;
+  background: var(--navy-800);
   color: var(--white);
   padding: 84px 0 70px;
   overflow: hidden;
   border-bottom: 1px solid rgba(200, 164, 93, 0.12);
 }
 
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
+  z-index: 0;
+  animation: heroKenBurns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(2, 8, 15, 0.94) 0%, rgba(7, 26, 45, 0.91) 55%, rgba(10, 37, 64, 0.88) 100%);
+}
+
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 85% 15%, rgba(200, 164, 93, 0.14), transparent 45%);
+  background-image: radial-gradient(circle at 85% 15%, rgba(200, 164, 93, 0.16), transparent 45%);
   pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes heroKenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
 }
 
 .hero-grid {
   position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 48px;
@@ -619,11 +640,11 @@ p {
   border: 1px solid rgba(200, 164, 93, 0.14);
   border-radius: var(--radius);
   padding: 30px 26px;
-  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.4s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   border-color: rgba(200, 164, 93, 0.4);
   box-shadow: var(--shadow);
 }
@@ -683,6 +704,11 @@ p {
   height: 170px;
   object-fit: cover;
   display: block;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card.has-image:hover .card-image {
+  transform: scale(1.06);
 }
 
 .card.has-image .card-body {
@@ -1382,6 +1408,53 @@ p {
   border-color: transparent;
   color: var(--navy-950);
   font-weight: 700;
+}
+
+/* ---------- Hero entrance animation ---------- */
+@keyframes fadeUpIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-grid > div:first-child > * {
+  opacity: 0;
+  animation: fadeUpIn 0.7s ease forwards;
+}
+
+.hero-grid > div:first-child > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-grid > div:first-child > *:nth-child(2) { animation-delay: 0.15s; }
+.hero-grid > div:first-child > *:nth-child(3) { animation-delay: 0.25s; }
+.hero-grid > div:first-child > *:nth-child(4) { animation-delay: 0.35s; }
+.hero-grid > div:first-child > *:nth-child(5) { animation-delay: 0.45s; }
+
+.stat-panel {
+  opacity: 0;
+  animation: fadeUpIn 0.7s ease forwards;
+  animation-delay: 0.3s;
+}
+
+/* ---------- Scroll-reveal (progressive enhancement — class added by JS) ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg,
+  .hero-grid > div:first-child > *,
+  .stat-panel,
+  .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* ---------- Legal pages ---------- */
