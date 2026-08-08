@@ -1134,11 +1134,46 @@ p {
   font-size: 0.85rem;
   margin-bottom: 6px;
   color: var(--slate-300);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.form-field label .required-mark {
+  color: var(--gold-500);
+}
+
+.form-field label .optional-mark {
+  font-weight: 500;
+  font-size: 0.72rem;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-field .field-control {
+  position: relative;
+}
+
+.form-field .field-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--slate-500);
+  pointer-events: none;
+  display: flex;
+}
+
+.form-field .field-control:has(.field-icon) input,
+.form-field .field-control:has(.field-icon) select {
+  padding-left: 40px;
 }
 
 .form-field input,
 .form-field select,
 .form-field textarea {
+  width: 100%;
   padding: 12px 14px;
   border: 1px solid rgba(200, 164, 93, 0.2);
   border-radius: 6px;
@@ -1162,40 +1197,295 @@ p {
   box-shadow: 0 0 0 3px rgba(200, 164, 93, 0.15);
 }
 
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea {
+  border-color: #ef4444;
+}
+
+.form-field.has-error input:focus,
+.form-field.has-error select:focus,
+.form-field.has-error textarea:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+}
+
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  min-height: 0;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.field-error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 .form-note {
   font-size: 0.82rem;
   color: var(--slate-500);
   margin-top: 6px;
 }
 
-.form-success {
-  display: none;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #6ee7b7;
-  padding: 14px 18px;
+/* ---------- File upload control ---------- */
+.file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 1.5px dashed rgba(200, 164, 93, 0.3);
   border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
+  background: var(--navy-900);
+  transition: border-color var(--transition), background var(--transition);
 }
 
-.form-success.visible {
-  display: block;
+.file-upload:hover {
+  border-color: rgba(200, 164, 93, 0.55);
 }
 
-.form-error {
+.file-upload.has-file {
+  border-style: solid;
+  border-color: rgba(200, 164, 93, 0.4);
+}
+
+.form-field.has-error .file-upload {
+  border-color: #ef4444;
+  border-style: solid;
+}
+
+.file-upload input[type="file"].sr-only:focus-visible + .file-upload-btn {
+  outline: 2px solid var(--gold-500);
+  outline-offset: 2px;
+}
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 6px;
+  background: var(--navy-600);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  border: 1px solid rgba(200, 164, 93, 0.25);
+  flex-shrink: 0;
+}
+
+.file-upload-btn:hover {
+  border-color: var(--gold-500);
+}
+
+.file-upload-name {
+  font-size: 0.85rem;
+  color: var(--slate-400);
+  overflow-wrap: anywhere;
+}
+
+.file-upload-name.chosen {
+  color: var(--gold-300);
+  font-weight: 600;
+}
+
+/* ---------- Submit button states ---------- */
+.btn-submit {
+  position: relative;
+  min-width: 220px;
+}
+
+.btn-submit .btn-spinner {
   display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(2, 8, 15, 0.3);
+  border-top-color: var(--navy-950);
+  border-radius: 50%;
+  animation: btnSpin 0.7s linear infinite;
+}
+
+.btn-submit.is-loading .btn-spinner {
+  display: inline-block;
+}
+
+.btn-submit.is-loading .btn-icon-success,
+.btn-submit.is-loading .btn-icon-error {
+  display: none;
+}
+
+.btn-submit .btn-icon-success,
+.btn-submit .btn-icon-error {
+  display: none;
+}
+
+.btn-submit.is-success .btn-icon-success {
+  display: inline-flex;
+}
+
+.btn-submit.is-error .btn-icon-error {
+  display: inline-flex;
+}
+
+.btn-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Status banner (server error) ---------- */
+.form-status-banner {
+  display: none;
+  align-items: flex-start;
+  gap: 12px;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.4);
   color: #fca5a5;
-  padding: 14px 18px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
+  padding: 16px 18px;
+  border-radius: 8px;
+  margin-bottom: 22px;
 }
 
-.form-error.visible {
+.form-status-banner.visible {
+  display: flex;
+}
+
+.form-status-banner .icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.form-status-banner h4 {
+  color: #fca5a5;
+  font-size: 0.98rem;
+  margin: 0 0 4px;
+}
+
+.form-status-banner p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: rgba(252, 165, 165, 0.85);
+}
+
+.form-status-banner a {
+  color: #fecaca;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ---------- Success screen ---------- */
+.form-success-screen {
+  display: none;
+  text-align: center;
+  padding: 20px 10px 6px;
+}
+
+.form-success-screen.visible {
   display: block;
+}
+
+.success-check {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-check svg {
+  width: 36px;
+  height: 36px;
+  color: #34d399;
+}
+
+.success-check svg path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: checkDraw 0.5s ease-out 0.15s forwards;
+}
+
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+.form-success-screen h3 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.form-success-screen p {
+  max-width: 460px;
+  margin: 0 auto 8px;
+}
+
+.success-reference {
+  display: inline-block;
+  margin: 18px 0 26px;
+  padding: 12px 22px;
+  border-radius: 8px;
+  background: var(--navy-900);
+  border: 1px solid rgba(200, 164, 93, 0.25);
+}
+
+.success-reference .label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  margin-bottom: 4px;
+}
+
+.success-reference .value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold-300);
+  letter-spacing: 0.03em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success-check svg path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .btn-submit .btn-spinner {
+    animation-duration: 1.4s;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---------- Contact info blocks ---------- */

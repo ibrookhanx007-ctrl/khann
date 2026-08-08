@@ -132,50 +132,223 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  /* Quote & contact forms: submit via Web3Forms (https://web3forms.com)
-     so submissions are emailed without needing a custom backend. */
+  /* ================================================================
+     Premium form system: client-side validation, multi-state submit
+     button, success/error screens, and Web3Forms submission.
+     (No application backend exists for this static site — Web3Forms
+     is the real service that emails oryasec@yahoo.com; see README
+     notes in the repo for details.)
+     ================================================================ */
+
+  function fieldLabel(field) {
+    var wrapper = field.closest(".form-field");
+    var label = wrapper ? wrapper.querySelector("label") : null;
+    if (!label) return field.name || "This field";
+    return label.textContent.replace(/\s*\*\s*$/, "").replace(/\s*\(optional\)\s*$/i, "").trim();
+  }
+
+  function setFieldError(field, message) {
+    var wrapper = field.closest(".form-field");
+    if (!wrapper) return;
+    var errorEl = wrapper.querySelector(".field-error");
+    wrapper.classList.toggle("has-error", !!message);
+    field.setAttribute("aria-invalid", message ? "true" : "false");
+    if (errorEl) errorEl.textContent = message || "";
+  }
+
+  function validateField(field) {
+    if (field.name === "botcheck" || field.disabled) return true;
+
+    var value = field.value || "";
+    var message = "";
+
+    if (field.type === "file") {
+      if (field.hasAttribute("required") && (!field.files || field.files.length === 0)) {
+        message = "Please attach your CV.";
+      } else if (field.files && field.files[0]) {
+        var file = field.files[0];
+        var allowed = (field.dataset.allowedTypes || "").split(",").map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+        var maxMb = parseFloat(field.dataset.maxSizeMb || "5");
+        var ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+        if (allowed.length && allowed.indexOf(ext) === -1) {
+          message = "Please upload a " + allowed.join(", ") + " file.";
+        } else if (file.size > maxMb * 1024 * 1024) {
+          message = "That file is too large. Maximum size is " + maxMb + "MB.";
+        }
+      }
+    } else if (field.type === "checkbox") {
+      if (field.hasAttribute("required") && !field.checked) {
+        message = fieldLabel(field) + " is required.";
+      }
+    } else {
+      var trimmed = value.trim();
+      if (field.hasAttribute("required") && trimmed.length === 0) {
+        message = fieldLabel(field) + " is required.";
+      } else if (trimmed.length > 0) {
+        if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+          message = "Please enter a valid email address.";
+        } else if (field.type === "tel" && !/^[+]?[\d\s()-]{7,20}$/.test(trimmed)) {
+          message = "Please enter a valid telephone number.";
+        } else if (field.tagName === "SELECT" && field.hasAttribute("required") && trimmed === "") {
+          message = "Please make a selection.";
+        } else if (field.dataset.minlength && trimmed.length < parseInt(field.dataset.minlength, 10)) {
+          message = "Please provide a little more detail (at least " + field.dataset.minlength + " characters).";
+        } else if (field.maxLength && field.maxLength > 0 && value.length > field.maxLength) {
+          message = "Please shorten this to " + field.maxLength + " characters or fewer.";
+        }
+      }
+    }
+
+    setFieldError(field, message);
+    return !message;
+  }
+
+  function validateForm(form) {
+    var fields = form.querySelectorAll("input, select, textarea");
+    var firstInvalid = null;
+    var valid = true;
+    fields.forEach(function (field) {
+      if (!validateField(field) && field.name !== "botcheck") {
+        valid = false;
+        if (!firstInvalid) firstInvalid = field;
+      }
+    });
+    if (firstInvalid) firstInvalid.focus();
+    return valid;
+  }
+
+  function generateReference() {
+    var year = new Date().getFullYear();
+    var rand = Math.random().toString(36).slice(2, 8).toUpperCase();
+    return "ORYA-" + year + "-" + rand;
+  }
+
+  /* Custom file inputs: show the chosen filename, keep it keyboard accessible */
+  document.querySelectorAll(".file-upload").forEach(function (wrap) {
+    var input = wrap.querySelector('input[type="file"]');
+    var nameEl = wrap.querySelector(".file-upload-name");
+    if (!input || !nameEl) return;
+    input.addEventListener("change", function () {
+      if (input.files && input.files[0]) {
+        nameEl.textContent = input.files[0].name;
+        nameEl.classList.add("chosen");
+        wrap.classList.add("has-file");
+      } else {
+        nameEl.textContent = nameEl.dataset.placeholder || "No file chosen";
+        nameEl.classList.remove("chosen");
+        wrap.classList.remove("has-file");
+      }
+      validateField(input);
+    });
+  });
+
   document.querySelectorAll("form[data-web3forms]").forEach(function (form) {
-    var submitBtn = form.querySelector('button[type="submit"]');
-    var submitLabel = submitBtn ? submitBtn.textContent : "";
-    var successEl = form.parentElement.querySelector(".form-success");
-    var errorEl = form.parentElement.querySelector(".form-error");
+    var loadedAt = Date.now();
+    var isSubmitting = false;
+    var submitBtn = form.querySelector(".btn-submit");
+    var labelEl = submitBtn ? submitBtn.querySelector(".btn-label") : null;
+    var wrapper = form.closest(".form-card") || form.parentElement;
+    var statusBanner = wrapper.querySelector(".form-status-banner");
+    var successScreen = wrapper.querySelector(".form-success-screen");
+
+    var TEXT = {
+      default: (submitBtn && submitBtn.dataset.defaultText) || (labelEl && labelEl.textContent) || "Submit",
+      loading: (submitBtn && submitBtn.dataset.loadingText) || "Submitting...",
+      success: (submitBtn && submitBtn.dataset.successText) || "Submission Received",
+      error: (submitBtn && submitBtn.dataset.errorText) || "Try Again",
+    };
+
+    function setButtonState(state) {
+      if (!submitBtn) return;
+      submitBtn.classList.remove("is-loading", "is-success", "is-error");
+      submitBtn.disabled = state === "loading";
+      if (state === "loading") {
+        submitBtn.classList.add("is-loading");
+      } else if (state === "success") {
+        submitBtn.classList.add("is-success");
+      } else if (state === "error") {
+        submitBtn.classList.add("is-error");
+      }
+      if (labelEl) {
+        labelEl.textContent = TEXT[state] || TEXT.default;
+      }
+    }
+
+    /* Validate on blur once the user has interacted with a field */
+    form.querySelectorAll("input, select, textarea").forEach(function (field) {
+      if (field.name === "botcheck") return;
+      field.addEventListener("blur", function () {
+        field.dataset.touched = "1";
+        validateField(field);
+      });
+      field.addEventListener("input", function () {
+        if (field.dataset.touched) validateField(field);
+      });
+    });
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      if (isSubmitting) return;
 
-      if (errorEl) errorEl.classList.remove("visible");
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Sending...";
+      if (statusBanner) statusBanner.classList.remove("visible");
+
+      /* Validate first, always — genuine visitors must see field errors
+         no matter how quickly they submit. Spam heuristics only gate
+         submissions that are otherwise valid. */
+      if (!validateForm(form)) {
+        return;
       }
 
+      /* Honeypot: bots that fill every field will trip this hidden checkbox */
+      var honeypot = form.querySelector('[name="botcheck"]');
+      if (honeypot && honeypot.checked) return;
+
+      /* Simple bot-timing heuristic: genuine visitors take more than a
+         couple of seconds to read and fill the form */
+      if (Date.now() - loadedAt < 1500) return;
+
+      var reference = generateReference();
+      var refField = form.querySelector('[name="reference"]');
+      if (refField) refField.value = reference;
+
+      isSubmitting = true;
+      setButtonState("loading");
+
       var formData = new FormData(form);
-      var payload = Object.fromEntries(formData.entries());
 
       fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
+        headers: { Accept: "application/json" },
+        body: formData,
       })
         .then(function (response) {
           return response.json();
         })
         .then(function (result) {
-          if (result.success) {
-            form.reset();
-            if (successEl) successEl.classList.add("visible");
-          } else if (errorEl) {
-            errorEl.classList.add("visible");
+          if (result && result.success) {
+            setButtonState("success");
+            if (successScreen) {
+              var refValueEl = successScreen.querySelector(".success-reference .value");
+              if (refValueEl) refValueEl.textContent = reference;
+              form.setAttribute("hidden", "");
+              successScreen.classList.add("visible");
+              var heading = successScreen.querySelector("h3");
+              if (heading) {
+                heading.setAttribute("tabindex", "-1");
+                heading.focus();
+              }
+            }
+          } else {
+            setButtonState("error");
+            if (statusBanner) statusBanner.classList.add("visible");
           }
         })
         .catch(function () {
-          if (errorEl) errorEl.classList.add("visible");
+          setButtonState("error");
+          if (statusBanner) statusBanner.classList.add("visible");
         })
         .finally(function () {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = submitLabel;
-          }
+          isSubmitting = false;
         });
     });
   });

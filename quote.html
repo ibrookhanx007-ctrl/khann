@@ -58,65 +58,128 @@
     <section class="section">
       <div class="container">
         <div class="form-card">
-          <div class="form-success" id="quote-success">Thanks — your quote request has been sent to ORYA Security Ltd. We'll be in touch shortly.</div>
-          <div class="form-error" id="quote-error">Sorry, something went wrong sending your request. Please try again or email us directly at oryasec@yahoo.com.</div>
-          <form data-web3forms="true" action="https://api.web3forms.com/submit" method="POST">
+          <div class="form-status-banner" role="alert">
+            <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+            <div>
+              <h4>Unable to Submit Request</h4>
+              <p>We couldn't submit your request right now. Please check your information and try again, or email us directly at <a href="mailto:oryasec@yahoo.com">oryasec@yahoo.com</a>.</p>
+            </div>
+          </div>
+
+          <form data-web3forms="true" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data" novalidate>
             <input type="hidden" name="access_key" value="e4a94869-d227-423d-9ff0-d7342af59da2">
             <input type="hidden" name="subject" value="Quote Request - ORYA Security Ltd">
             <input type="hidden" name="from_name" value="ORYA Security Ltd Website">
+            <input type="hidden" name="reference">
             <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
+            <p style="margin:0 0 22px; font-size:0.85rem; color:var(--slate-500);">Fields marked <span class="required-mark">*</span> are required.</p>
+
             <div class="form-grid">
               <div class="form-field">
-                <label for="full-name">Full Name</label>
-                <input type="text" id="full-name" name="full-name" required>
+                <label for="full-name">Full Name <span class="required-mark" aria-hidden="true">*</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                  <input type="text" id="full-name" name="full-name" autocomplete="name" maxlength="100" required aria-describedby="full-name-error">
+                </div>
+                <div class="field-error" id="full-name-error" role="alert"></div>
               </div>
               <div class="form-field">
-                <label for="company-name">Company Name</label>
-                <input type="text" id="company-name" name="company-name">
+                <label for="company-name">Company Name <span class="optional-mark">Optional</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></span>
+                  <input type="text" id="company-name" name="company-name" autocomplete="organization" maxlength="120">
+                </div>
               </div>
               <div class="form-field">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Email Address <span class="required-mark" aria-hidden="true">*</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6l-10 7L2 6"/><path d="M2 6h20v12H2z"/></svg></span>
+                  <input type="email" id="email" name="email" autocomplete="email" maxlength="150" required aria-describedby="email-error">
+                </div>
+                <div class="field-error" id="email-error" role="alert"></div>
               </div>
               <div class="form-field">
-                <label for="phone">Telephone Number</label>
-                <input type="tel" id="phone" name="phone" required>
+                <label for="phone">Telephone Number <span class="required-mark" aria-hidden="true">*</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+                  <input type="tel" id="phone" name="phone" autocomplete="tel" maxlength="20" required aria-describedby="phone-error">
+                </div>
+                <div class="field-error" id="phone-error" role="alert"></div>
               </div>
               <div class="form-field">
-                <label for="service">Service Required</label>
-                <select id="service" name="service" required>
-                  <option value="">Select a service&hellip;</option>
-                <option value="Security Officers">Security Officers</option>
-                <option value="Door Supervisors">Door Supervisors</option>
-                <option value="Event Security">Event Security</option>
-                <option value="Construction Site Security">Construction Site Security</option>
-                <option value="Retail Security">Retail Security</option>
-                <option value="Reception &amp; Concierge Security">Reception &amp; Concierge Security</option>
-                <option value="Key Holding &amp; Alarm Response">Key Holding &amp; Alarm Response</option>
-                <option value="Vacant Property Security">Vacant Property Security</option>
-                <option value="Other">Other / Not Sure</option>
-                </select>
+                <label for="service">Service Required <span class="required-mark" aria-hidden="true">*</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 5v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V5l-8-3z"/></svg></span>
+                  <select id="service" name="service" required aria-describedby="service-error">
+                    <option value="">Select a service&hellip;</option>
+                    <option value="Security Officers">Security Officers</option>
+                    <option value="Door Supervisors">Door Supervisors</option>
+                    <option value="Event Security">Event Security</option>
+                    <option value="Construction Site Security">Construction Site Security</option>
+                    <option value="Retail Security">Retail Security</option>
+                    <option value="Reception &amp; Concierge Security">Reception &amp; Concierge Security</option>
+                    <option value="Key Holding &amp; Alarm Response">Key Holding &amp; Alarm Response</option>
+                    <option value="Vacant Property Security">Vacant Property Security</option>
+                    <option value="Other">Other / Not Sure</option>
+                  </select>
+                </div>
+                <div class="field-error" id="service-error" role="alert"></div>
               </div>
               <div class="form-field">
-                <label for="location">Location / Postcode</label>
-                <input type="text" id="location" name="location" required>
+                <label for="location">Location / Postcode <span class="required-mark" aria-hidden="true">*</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                  <input type="text" id="location" name="location" autocomplete="postal-code" maxlength="120" required aria-describedby="location-error">
+                </div>
+                <div class="field-error" id="location-error" role="alert"></div>
               </div>
               <div class="form-field">
-                <label for="officers">Number of Security Officers Required</label>
-                <input type="text" id="officers" name="officers">
+                <label for="officers">Number of Security Officers <span class="optional-mark">Optional</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
+                  <input type="number" id="officers" name="officers" min="1" max="500" step="1" inputmode="numeric">
+                </div>
               </div>
               <div class="form-field">
-                <label for="datetime">Date &amp; Time Frame</label>
-                <input type="text" id="datetime" name="datetime" placeholder="e.g. Start date, shift pattern">
+                <label for="date-required">Date &amp; Time Frame <span class="optional-mark">Optional</span></label>
+                <div class="field-control">
+                  <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                  <input type="date" id="date-required" name="date-required" aria-label="Date required">
+                </div>
+                <input type="text" id="time-frame" name="time-frame" placeholder="Shift pattern / time frame, e.g. Nights, 6pm-6am" maxlength="150" style="margin-top:10px;" aria-label="Shift pattern or time frame">
               </div>
               <div class="form-field full">
-                <label for="message">Message / Additional Details</label>
-                <textarea id="message" name="message" rows="5"></textarea>
+                <label for="message">Message / Additional Details <span class="required-mark" aria-hidden="true">*</span></label>
+                <textarea id="message" name="message" rows="5" maxlength="2000" data-minlength="10" required aria-describedby="message-error"></textarea>
+                <div class="field-error" id="message-error" role="alert"></div>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Quote Request</button>
+
+            <button type="submit" class="btn btn-primary btn-submit" data-default-text="Request a Free Quote" data-loading-text="Submitting..." data-success-text="Submission Received" data-error-text="Try Again">
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <svg class="btn-icon-success" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              <svg class="btn-icon-error" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span class="btn-label">Request a Free Quote</span>
+            </button>
             <p class="form-note">We'll respond to your enquiry as soon as possible.</p>
           </form>
+
+          <div class="form-success-screen" role="status">
+            <div class="success-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <h3>Request Received Successfully</h3>
+            <p>Thank you for contacting ORYA Security Ltd. Your quote request has been successfully submitted.</p>
+            <p>Our team will review your enquiry and contact you using the information you provided.</p>
+            <div class="success-reference">
+              <span class="label">Reference</span>
+              <span class="value">—</span>
+            </div>
+            <div>
+              <a href="index.html" class="btn btn-dark">Return to Website</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
