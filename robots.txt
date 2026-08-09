@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://khann-teal.vercel.app/sitemap.xml
